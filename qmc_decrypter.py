@@ -17,20 +17,6 @@ class HandleThread(Thread):
         self.output_dir = output_dir
 
     def run(self):
-        # for i in self.file_list:
-        #     start_time = time.time()
-        #     self.log_area.insert(END, '正在处理 %s ...\n' % i)
-        #     qmc_file_decrypt(self.file_list[i], self.output_dir)
-        #     end_time = time.time()
-        #     total_time = end_time - start_time
-        #     self.file_list_box.delete(0)
-        #     self.file_list.pop(i)
-        #     self.log_area.insert(END, '文件处理完毕\n')
-        #     self.log_area.insert(END, '共耗时 %d 秒\n' % total_time)
-        #     self.log_area.insert(END, '******************************* \n')
-        #     self.log_area.see(END)
-        #     self.log_area.update()
-
         for i in list(self.file_list):
             start_time = time.time()
             self.log_area.insert(END, '正在处理 %s ...\n' % i)
@@ -41,15 +27,19 @@ class HandleThread(Thread):
             del self.file_list[i]
             self.log_area.insert(END, '文件处理完毕\n')
             self.log_area.insert(END, '共耗时 %d 秒\n' % total_time)
-            self.log_area.insert(END, '******************************* \n')
+            self.log_area.insert(END, '********************************* \n')
             self.log_area.see(END)
             self.log_area.update()
 
 
 class App:
-    def __init__(self, root):
-
-        self.root = root
+    def __init__(self, master):
+        self.root = master
+        self.set_app_geometry()
+        self.root.title('qq音乐VIP歌曲转换器v1.2')
+        self.root.iconbitmap('favicon.ico')
+        # self.root.geometry('500x300+600+300')
+        self.root.resizable(False, False)
         self.file_list = {}
         # self.file_name_list = []
         self.file_names = StringVar()
@@ -57,6 +47,10 @@ class App:
         self.init_menu()
         self.init_input_frame()
         self.init_handle_frame()
+
+    def set_app_geometry(self):
+        scn_width, scn_height = self.root.maxsize()
+        self.root.geometry('500x300+%d+%d' % (scn_width / 2 - 250, scn_height / 2 - 150))
 
     def init_menu(self):
         menubar = tk.Menu(self.root)
@@ -107,12 +101,9 @@ class App:
             print(file_name)
             if self.is_qmc_file(file_name) and file_name not in self.file_list:
                 file = {file_name: file_path}
-                # self.file_name_list.append(file_name)
                 self.file_list.update(file)
                 print(self.file_list)
                 self.file_names.set(list(self.file_list))
-                # print(self.file_name_list)
-                # print(self.file_list_box.get(0, len(self.file_list) - 1))
             else:
                 pass
 
@@ -136,7 +127,6 @@ class App:
             return False
 
     def do_it(self):
-        # print(self.file_list)
         if self.out_dir.get() == '':
             messagebox.showwarning(title='警告', message='请先指定输出文件夹！')
             pass
@@ -146,7 +136,6 @@ class App:
             out_dir_str = self.out_dir.get()
             # file_items = self.file_list_box.get(0, len(self.file_list) - 1)
 
-            print(threading.activeCount())
             if threading.activeCount() <= 1:
                 t = HandleThread(file_list_box=self.file_list_box, log_area=self.log_area, file_list=self.file_list,
                                  output_dir=out_dir_str)
@@ -163,8 +152,5 @@ class App:
 
 
 root = tk.Tk()
-root.title('qq音乐VIP歌曲破解器')
-root.geometry('500x300')
-root.resizable(False, False)
 app = App(root)
 root.mainloop()

@@ -1,37 +1,11 @@
-import os
 
-suffix_map = {'qmcogg': 'ogg', 'qmcflac': 'flac'}
+suffix_map = {'qmcogg': 'ogg', 'qmcflac': 'flac', 'qmc0': 'mp3'}
 
 
 def save_file(data, output_dir, file_name, file_suffix):
     path = output_dir + '/' + file_name + '.' + file_suffix
     with open(path, 'wb') as f:
         f.write(data)
-
-
-# def execute(path, out_dir):
-#     if os.path.isdir(path):
-#         file_list = os.listdir(path)
-#         for file in file_list:
-#             input_path = path + '/' + file
-#             if os.path.isfile(input_path):
-#                 print('处理 ' + file + ' 中ing....')
-#                 file_suffix = str(file.split('.')[1])
-#                 file_name = str(file.split('.')[0])
-#                 with open(input_path, 'rb') as f:
-#                     data = bytearray(f.read())
-#                 for i in range(len(data)):
-#                     data[i] ^= map_l(i)
-#                 save_file(data, out_dir, file_name, suffix_map[file_suffix])
-#             else:
-#                 pass
-#
-#     elif os.path.isfile(path):
-#         file = path.split('/')[1]
-#         file_name = file.split('.')[0]
-#         file_suffix = file.split('.')[-1]
-#     else:
-#         raise ValueError('please input a valuable path')
 
 
 def qmc_file_decrypt(file_path, out_dir):
