@@ -17,16 +17,31 @@ class HandleThread(Thread):
         self.output_dir = output_dir
 
     def run(self):
-        for i in self.file_list:
+        # for i in self.file_list:
+        #     start_time = time.time()
+        #     self.log_area.insert(END, '正在处理 %s ...\n' % i)
+        #     qmc_file_decrypt(self.file_list[i], self.output_dir)
+        #     end_time = time.time()
+        #     total_time = end_time - start_time
+        #     self.file_list_box.delete(0)
+        #     self.file_list.pop(i)
+        #     self.log_area.insert(END, '文件处理完毕\n')
+        #     self.log_area.insert(END, '共耗时 %d 秒\n' % total_time)
+        #     self.log_area.insert(END, '******************************* \n')
+        #     self.log_area.see(END)
+        #     self.log_area.update()
+
+        for i in list(self.file_list):
             start_time = time.time()
             self.log_area.insert(END, '正在处理 %s ...\n' % i)
             qmc_file_decrypt(self.file_list[i], self.output_dir)
             end_time = time.time()
             total_time = end_time - start_time
             self.file_list_box.delete(0)
+            del self.file_list[i]
             self.log_area.insert(END, '文件处理完毕\n')
             self.log_area.insert(END, '共耗时 %d 秒\n' % total_time)
-            self.log_area.insert(END, '######################################\n')
+            self.log_area.insert(END, '******************************* \n')
             self.log_area.see(END)
             self.log_area.update()
 
@@ -36,7 +51,7 @@ class App:
 
         self.root = root
         self.file_list = {}
-        self.file_name_list = []
+        # self.file_name_list = []
         self.file_names = StringVar()
         self.out_dir = StringVar()
         self.init_menu()
@@ -85,15 +100,17 @@ class App:
         self.log_area.config(yscrollcommand=scroll.set)
 
     def _open_directory(self):
-        file_list = filedialog.askopenfilenames()
-        for file in file_list:
+        file_opened = filedialog.askopenfilenames()
+        for file in file_opened:
             file_path = file
             file_name = file_path.split('/')[-1]
-            if self.is_qmc_file(file_name) and file_name not in self.file_name_list:
+            print(file_name)
+            if self.is_qmc_file(file_name) and file_name not in self.file_list:
                 file = {file_name: file_path}
-                self.file_name_list.append(file_name)
+                # self.file_name_list.append(file_name)
                 self.file_list.update(file)
-                self.file_names.set(self.file_name_list)
+                print(self.file_list)
+                self.file_names.set(list(self.file_list))
                 # print(self.file_name_list)
                 # print(self.file_list_box.get(0, len(self.file_list) - 1))
             else:
@@ -104,9 +121,8 @@ class App:
         self.out_dir.set(out_dir_str)
 
     def _clear_all_file(self):
-        self.file_list_box.delete(0, len(self.file_name_list) - 1)
+        self.file_list_box.delete(0, len(self.file_list) - 1)
         self.file_list = {}
-        self.file_name_list = []
 
     def is_qmc_file(self, file_name):
         suffix_list = ['qmcogg', 'qmcflac']
@@ -124,7 +140,7 @@ class App:
         if self.out_dir.get() == '':
             messagebox.showwarning(title='警告', message='请先指定输出文件夹！')
             pass
-        elif len(self.file_list) ==0:
+        elif len(self.file_list) == 0:
             messagebox.showwarning(title='提示', message='请先输入要处理的文件!')
         else:
             out_dir_str = self.out_dir.get()
@@ -144,6 +160,7 @@ class App:
 
     def _about(self):
         messagebox.showinfo(title='关于', message='此工具仅供个人学习交流，未用于任何商业用途！')
+
 
 root = tk.Tk()
 root.title('qq音乐VIP歌曲破解器')
