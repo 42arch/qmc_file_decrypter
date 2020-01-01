@@ -1,3 +1,5 @@
+import base64
+import os
 import threading
 import time
 import tkinter as tk
@@ -6,6 +8,7 @@ from tkinter import *
 from tkinter import filedialog, messagebox
 
 from decrypt import qmc_file_decrypt
+from icon import img
 
 
 class HandleThread(Thread):
@@ -36,8 +39,11 @@ class App:
     def __init__(self, master):
         self.root = master
         self.set_app_geometry()
-        self.root.title('qq音乐VIP歌曲转换器v1.2')
-        self.root.iconbitmap('favicon.ico')
+        self.root.title('qq音乐VIP歌曲转换器v1.3')
+        with open('tmp.ico', 'wb+') as ico:
+            ico.write(base64.b64decode(img))
+        self.root.iconbitmap('tmp.ico')
+        os.remove("tmp.ico")
         # self.root.geometry('500x300+600+300')
         self.root.resizable(False, False)
         self.file_list = {}
@@ -50,7 +56,7 @@ class App:
 
     def set_app_geometry(self):
         scn_width, scn_height = self.root.maxsize()
-        self.root.geometry('500x300+%d+%d' % (scn_width / 2 - 250, scn_height / 2 - 150))
+        self.root.geometry('500x320+%d+%d' % (scn_width / 2 - 250, scn_height / 2 - 150))
 
     def init_menu(self):
         menubar = tk.Menu(self.root)
@@ -69,26 +75,25 @@ class App:
         menubar.add_cascade(label='关于', menu=about_menu)
 
     def init_input_frame(self):
-        # self.out_dir.set('aaaaaa')
-        input_frame = tk.Frame(bg='grey')
+        input_frame = tk.Frame(bg='#f0e68c')
         input_frame.place(x=5, y=5, width=190, height=290)
-        input_label = tk.Label(input_frame, bg='yellow', text='待处理文件').pack(side='top', fill='x')
+        input_label = tk.Label(input_frame, bg='#00fa9a', text='待处理文件').pack(side='top', fill='x')
         list_box_scroll = tk.Scrollbar(input_frame)
         list_box_scroll.pack(side=RIGHT, fill=Y)
-        self.file_list_box = tk.Listbox(input_frame, listvariable=self.file_names)
+        self.file_list_box = tk.Listbox(input_frame, bg='#f0e68c', listvariable=self.file_names)
         self.file_list_box.pack(side='top', fill=BOTH, expand=YES, anchor=CENTER)
         list_box_scroll.config(command=self.file_list_box.yview)
         self.file_list_box.config(yscrollcommand=list_box_scroll.set)
-        out_dir_label = tk.Label(input_frame, bg='yellow', text='输出文件路径').pack(side=TOP, fill=X)
-        out_dir_entry = tk.Entry(input_frame, bg='grey', textvariable=self.out_dir).pack(side=BOTTOM, fill=X)
+        out_dir_label = tk.Label(input_frame, bg='#00fa9a', text='输出文件路径').pack(side=TOP, fill=X)
+        out_dir_entry = tk.Entry(input_frame, bg='#f0e68c', textvariable=self.out_dir).pack(side=BOTTOM, fill=X)
 
     def init_handle_frame(self):
-        handle_frame = tk.Frame(bg='yellow')
+        handle_frame = tk.Frame(bg='#00fa9a')
         handle_frame.place(x=205, y=5, width=290, height=290)
         handle_button = tk.Button(handle_frame, text='开始转换', command=self.do_it).pack(side=TOP)
         scroll = tk.Scrollbar(handle_frame)
         scroll.pack(side=RIGHT, fill=Y)
-        self.log_area = tk.Text(handle_frame, bg='cyan', foreground='gray')
+        self.log_area = tk.Text(handle_frame, bg='#f0e68c', foreground='grey')
         self.log_area.pack(side=BOTTOM)
         scroll.config(command=self.log_area.yview)
         self.log_area.config(yscrollcommand=scroll.set)
@@ -98,11 +103,9 @@ class App:
         for file in file_opened:
             file_path = file
             file_name = file_path.split('/')[-1]
-            print(file_name)
             if self.is_qmc_file(file_name) and file_name not in self.file_list:
                 file = {file_name: file_path}
                 self.file_list.update(file)
-                print(self.file_list)
                 self.file_names.set(list(self.file_list))
             else:
                 pass
